@@ -1,3 +1,5 @@
+import { corsServer } from '../config.js'
+
 // https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API/Tutorial/Using_images
 const img = new Image()
 
@@ -6,7 +8,7 @@ img.crossOrigin = 'anonymous'
 
 // thanks: https://gist.github.com/jimmywarting/ac1be6ea0297c16c477e17f8fbe51347
 // and specifically: https://github.com/Rob--W/cors-anywhere
-img.src = 'https://cors-anywhere.herokuapp.com/https://mdn.mozillademos.org/files/5397/rhino.jpg'
+img.src = `${corsServer}/https://mdn.mozillademos.org/files/5397/rhino.jpg`
 
 const canvas = document.querySelector('canvas') // defaults to 300x150
 const ctx = canvas.getContext('2d')

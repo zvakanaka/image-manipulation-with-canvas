@@ -1,6 +1,8 @@
+const DEFAULT_THRESHOLD = 100
+
 export default {
   name: 'Black and White',
-  func: (state, threshold = 100) => {
+  func: (state, threshold = DEFAULT_THRESHOLD) => {
     for (let x = 0; x < state.canvas.width; x++) {
       for (let y = 0; y < state.canvas.height; y++) {
         const data = state.ctx.getImageData(x, y, 1, 1).data
@@ -12,9 +14,9 @@ export default {
   },
   controls: [
     {
-      label: 'Threshold', default: 100, type: 'slider',
+      label: 'Threshold', default: DEFAULT_THRESHOLD, type: 'slider',
       attributes: [
-        { name: 'value', value: 100 },
+        { name: 'value', value: DEFAULT_THRESHOLD },
         { name: 'max', value: 256 }
       ]
     }

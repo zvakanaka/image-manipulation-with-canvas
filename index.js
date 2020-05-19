@@ -1,11 +1,8 @@
 import imageFilters from './js/imageFilters/index.js'
 import createControl from './js/createControl.js'
 import download from './js/download.js'
+import { corsServer } from '../config.js'
 
-console.clear()
-
-// const corsServer = 'http://localhost:8081/'
-const corsServer = 'https://cors-anywhere.herokuapp.com/'
 const imageSrc = 'https://images.unsplash.com/photo-1579036018199-6cab68e7f7c9?ixlib=rb-1.2.1&auto=format&fit=crop&w=1267&q=80'
 const exampleSrc = `${corsServer}${imageSrc}`
 
