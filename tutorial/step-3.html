@@ -1,0 +1,25 @@
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Step 3 | Image Manipulation with Canvas</title>
+  <link rel="stylesheet" href="../index.css">
+</head>
+<body>
+  <canvas></canvas>
+
+  <pre><code></code></pre>
+  <a href="./index.html">Back</a>
+
+  <script>
+    (async () => {
+      const codeEl = document.querySelector('code')
+      const res = await fetch('./step-3-contain-image-within-view.js')
+      const code = await res.text()
+      codeEl.textContent = code
+    })()
+  </script>
+
+  <script src="./step-3-contain-image-within-view.js"></script>
+</body>
+</html>

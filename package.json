@@ -1,0 +1,25 @@
+{
+  "name": "image-manipulation-with-canvas",
+  "version": "1.0.0",
+  "description": "Image Manipulation with Canvas",
+  "main": "index.js",
+  "dependencies": {
+    "live-server": "^1.2.1"
+  },
+  "devDependencies": {
+  },
+  "scripts": {
+    "start": "npx live-server",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zvakanaka/image-manipulation-with-canvas.git"
+  },
+  "author": "Adam Quinton",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/zvakanaka/image-manipulation-with-canvas/issues"
+  },
+  "homepage": "https://github.com/zvakanaka/image-manipulation-with-canvas#readme"
+}

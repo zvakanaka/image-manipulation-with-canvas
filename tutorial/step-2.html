@@ -1,0 +1,24 @@
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Step 2 | Image Manipulation with Canvas</title>
+  <link rel="stylesheet" href="../index.css">
+</head>
+<body>
+  <canvas></canvas>
+  <script src="./step-2-pixel-redraw.js"></script>
+
+  <pre><code></code></pre>
+  <a href="./index.html">Back</a>
+
+  <script>
+    (async () => {
+      const codeEl = document.querySelector('code')
+      const res = await fetch('./step-2-pixel-redraw.js')
+      const code = await res.text()
+      codeEl.textContent = code
+    })()
+  </script>
+</body>
+</html>
