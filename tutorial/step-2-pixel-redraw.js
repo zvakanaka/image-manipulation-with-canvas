@@ -8,7 +8,7 @@ img.crossOrigin = 'anonymous'
 
 // thanks: https://gist.github.com/jimmywarting/ac1be6ea0297c16c477e17f8fbe51347
 // and specifically: https://github.com/Rob--W/cors-anywhere
-img.src = `${corsServer}/https://mdn.mozillademos.org/files/5397/rhino.jpg`
+img.src = `${corsServer}https://mdn.mozillademos.org/files/5397/rhino.jpg`
 
 const canvas = document.querySelector('canvas') // defaults to 300x150
 const ctx = canvas.getContext('2d')
@@ -16,6 +16,7 @@ const ctx = canvas.getContext('2d')
 img.onload = () => {
   canvas.width = img.width
   canvas.height = img.height
+
   ctx.drawImage(img, 0, 0, canvas.width, canvas.height)
 
   const threshold = 100
@@ -28,5 +29,4 @@ img.onload = () => {
       ctx.fillRect(x, y, 1, 1)
     }
   }
-
 }
