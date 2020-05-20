@@ -51,21 +51,41 @@ imageFilters.forEach((imageFilter, i) => addImageFilter(imageFilter.name, i))
 
 state.currentFilter = () => imageFilters[imageFilterSelect.value]
 
+let lastSelectedFilteSelectValue
 const draw = () => {
   state.drawImg()
-  Array.from(imageFilterControls.children).forEach(child => child.remove())
   const filter = state.currentFilter()
-  filter.func(state)
-  filter.controls.forEach((control) => {
-    const controlEl = createControl(control, state)
-    imageFilterControls.appendChild(controlEl)
-  })
+  if (lastSelectedFilteSelectValue !== imageFilterSelect.value) {
+    Array.from(imageFilterControls.children).forEach(child => child.remove())
+    filter.controls.forEach((control) => {
+      const controlEl = createControl(control, state)
+      imageFilterControls.appendChild(controlEl)
+    })
+    lastSelectedFilteSelectValue = imageFilterSelect.value
+  }
+  filter.func(state, state.lastFuncArg)
 }
 
 // apply the selected filter
 imageFilterSelect.addEventListener('change', draw)
 state.image.onload = draw
 window.onresize = draw
+
+state.canvas.addEventListener('mousedown', ({layerX, layerY}) => {
+  state.lastClickX = layerX
+  state.lastClickY = layerY
+  if (state.currentFilter().events && state.currentFilter().events.includes('mousedown')) {
+    draw()
+  }
+})
+
+state.canvas.addEventListener('mousemove', ({layerX, layerY}) => {
+  state.lastClickX = layerX
+  state.lastClickY = layerY
+  if (state.currentFilter().events && state.currentFilter().events.includes('mousemove')) {
+    draw()
+  }
+})
 
 // export button - or you can right-click the canvas -> save image
 const exportButton = document.querySelector('.export')

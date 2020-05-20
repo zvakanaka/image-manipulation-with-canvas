@@ -6,8 +6,7 @@
   "dependencies": {
     "live-server": "^1.2.1"
   },
-  "devDependencies": {
-  },
+  "devDependencies": {},
   "scripts": {
     "start": "npx live-server",
     "test": "echo \"Error: no test specified\" && exit 1"

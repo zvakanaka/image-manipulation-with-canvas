@@ -21,6 +21,7 @@ export default (control, state) => {
         state.drawImg()
         const filter = state.currentFilter()
         valueSpan.textContent = target.value
+        state.lastFuncArg = control.currentValue
         filter.func(state, control.currentValue)
       })
       el.appendChild(input)
@@ -47,6 +48,7 @@ export default (control, state) => {
         control.currentValue = target.value
         state.drawImg()
         const filter = state.currentFilter()
+        state.lastFuncArg = control.currentValue
         filter.func(state, control.currentValue)
       })
       label.appendChild(select)

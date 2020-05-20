@@ -1,26 +1,25 @@
 export default {
   name: 'Grayscale',
-  func: (state, algorithm = 'rgb2gray') => {
-    for (let x = 0; x < state.canvas.width; x++) {
-      for (let y = 0; y < state.canvas.height; y++) {
-        const data = state.ctx.getImageData(x, y, 1, 1).data
-        const [r, g, b] = data
-        let newColor
-        switch (algorithm) {
-          case 'rgb2gray':
-            // https://www.mathworks.com/help/matlab/ref/rgb2gray.html
-            newColor = (0.299 * r) + (0.587 * g) + (0.114 * b)
-            break
-          case 'average':
-            newColor = (data[0] + data[1] + data[2]) / 3
-            break
-          default:
-            break
-        }
-        state.ctx.fillStyle = `rgb(${newColor}, ${newColor}, ${newColor})`
-        state.ctx.fillRect(x, y, 1, 1)
+  func: ({ canvas, ctx }, algorithm = 'rgb2gray') => {
+    const pixels = ctx.getImageData(0, 0, canvas.width, canvas.height);
+
+    for (let i = 0; i < pixels.data.length; i = i + 4) {
+      let newColor
+      switch (algorithm) {
+        case 'rgb2gray':
+          // https://www.mathworks.com/help/matlab/ref/rgb2gray.html
+          newColor = (0.299 * pixels.data[i]) + (0.587 * pixels.data[i + 1]) + (0.114 * pixels.data[i + 2])
+          break
+        case 'average':
+          newColor = (pixels.data[i] + pixels.data[i + 1] + pixels.data[i + 2]) / 3
+          break
+        default:
+          break
       }
+      pixels.data[i] = pixels.data[i + 1] = pixels.data[i + 2] = newColor
     }
+
+    ctx.putImageData(pixels, 0, 0);
   },
   controls: [
     {

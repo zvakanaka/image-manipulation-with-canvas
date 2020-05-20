@@ -9,6 +9,7 @@ a {
 }
 canvas {
   outline: 1px solid mediumspringgreen;
+  cursor: crosshair;
 }
 .image-filter-container {
   background: grey;

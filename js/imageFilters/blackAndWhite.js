@@ -2,15 +2,14 @@ const DEFAULT_THRESHOLD = 100
 
 export default {
   name: 'Black and White',
-  func: (state, threshold = DEFAULT_THRESHOLD) => {
-    for (let x = 0; x < state.canvas.width; x++) {
-      for (let y = 0; y < state.canvas.height; y++) {
-        const data = state.ctx.getImageData(x, y, 1, 1).data
-        const newColor = (data[0] + data[1] + data[2]) / 3 < threshold ? 'black' : 'white'
-        state.ctx.fillStyle = newColor
-        state.ctx.fillRect(x, y, 1, 1)
-      }
+  func: ({ canvas, ctx }, threshold = DEFAULT_THRESHOLD) => {
+    const pixels = ctx.getImageData(0, 0, canvas.width, canvas.height);
+
+    for (let i = 0; i < pixels.data.length; i = i + 4) {
+      const newColor = (pixels.data[i] + pixels.data[i + 1] + pixels.data[i + 2]) / 3 < threshold ? 0 : 255
+      pixels.data[i] = pixels.data[i + 1] = pixels.data[i + 2] = newColor;
     }
+    ctx.putImageData(pixels, 0, 0);
   },
   controls: [
     {
