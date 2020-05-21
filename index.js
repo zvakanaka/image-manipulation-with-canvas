@@ -67,7 +67,10 @@ const draw = () => {
 }
 
 // apply the selected filter
-imageFilterSelect.addEventListener('change', draw)
+imageFilterSelect.addEventListener('change', () => {
+  delete state.lastFuncArg
+  draw()
+})
 state.image.onload = draw
 window.onresize = draw
 

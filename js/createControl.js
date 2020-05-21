@@ -16,7 +16,7 @@ export default (control, state) => {
       }
       const valueSpan = document.createElement('span')
       valueSpan.textContent = input.value
-      input.addEventListener('change', ({target}) => {
+      input.addEventListener('input', ({target}) => {
         control.currentValue = Number(target.value)
         state.drawImg()
         const filter = state.currentFilter()
