@@ -4,22 +4,46 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Image Manipulation with Canvas</title>
   <link rel="stylesheet" href="./index.css">
+  <link rel="stylesheet" href="./css/drag-and-drop.css">
 </head>
 <body>
   <canvas></canvas>
-  <div class="image-filter-container">
-    <select class="image-filter-select">
-      <!-- append image filter options here -->
-    </select>
-    <div class="image-filter-controls">
 
+  <video hidden></video>
+
+  <div class="flex-container">
+
+    <label>
+      Input Source
+      <select class="input-source-select">
+        <option value="webcam">Webcam</option>
+        <option value="url">URL</option>
+        <option value="file">File Upload</option>
+      </select>
+    </label>
+
+    <div hidden class="drop">
+      <label for="image-file" data-tooltip="Select file">+</label>
+      <input type="file" id="image-file" accept="image/*">
     </div>
-  </div>
-  <button class="export">Export</button>
 
-  <p>
-    <a href="./tutorial/index.html">Tutorial</a>
-  </p>
+    <div class="image-filter-container">
+      <label>
+        Filter
+        <select class="image-filter-select">
+          <!-- append image filter options here -->
+        </select>
+      </label>
+      <div class="image-filter-controls"></div>
+    </div>
+    <div>
+      <button class="export">Export</button>
+    </div>
+
+    <p>
+      <a href="./tutorial/index.html">Tutorial</a>
+    </p>
+  </div>
   <script src="./index.js" type="module"></script>
 </body>
 </html>

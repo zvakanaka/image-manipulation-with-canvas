@@ -1,0 +1,38 @@
+.drop:after  {
+  font-size: 200%;
+}
+[for="image-file"] {
+  cursor: pointer;
+  font-size: 400%;
+  color: white;
+  align-self: center;
+}
+#image-file {
+  width: 0.1px;
+  height: 0.1px;
+  opacity: 0;
+  overflow: hidden;
+  position: absolute;
+  z-index: -1;
+}
+
+.drop {
+  height: 10rem;
+  background: #222;
+  outline: 3px dashed grey;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  margin: 1rem;
+}
+.drop:before {
+  content: 'Drag and Drop Image';
+  color: white;
+  /* margin: calc(50% - 10ch); */
+  font-family: monospace;
+  align-self: center;
+}
+
+.drop[hidden] {
+  display: none;
+}
