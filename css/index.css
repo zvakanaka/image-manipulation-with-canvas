@@ -18,6 +18,9 @@ canvas {
   outline: 1px solid mediumspringgreen;
   cursor: crosshair;
 }
+label {
+  padding-right: 1ch;
+}
 .image-filter-container {
   background: grey;
   color: black;
