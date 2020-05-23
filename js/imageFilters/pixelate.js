@@ -1,4 +1,4 @@
-const DEFAULT_PIXELS_WIDTH = 64
+const DEFAULT_PIXELS_WIDTH = 32
 const MAX_PIXELS_WIDTH = 250
 
 export default {
