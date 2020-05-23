@@ -32,3 +32,8 @@ canvas {
 .export-button-container {
   align-self: flex-end;
 }
+
+.filter-messages {
+  max-height: 8em;
+  overflow-y: auto;
+}

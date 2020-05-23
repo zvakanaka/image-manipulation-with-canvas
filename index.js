@@ -1,8 +1,8 @@
 import imageFilters from './js/imageFilters/index.js'
 import createControl from './js/createControl.js'
 import download from './js/download.js'
+import loadDragAndDropFile from './js/dragAndDrop.js'
 import { corsServer } from './config.js'
-import fileParts from './js/fileParts.js'
 
 const inputSourceSelect = document.querySelector('.input-source-select')
 const imageFilterContainer = document.querySelector('.image-filter-container')
@@ -112,32 +112,14 @@ window.onresize = () => {
   draw()
 }
 
-function consumeFile(ev) {
-  const target = ev.dataTransfer ? ev.dataTransfer : ev.target;
-  window.fileObject = target.files[0];
-  if (target.files.length === 1) { // single file
-    //determine if our URL is a supported image
-    const supportedFileExtensions = ['png', 'jpg', 'gif', 'bmp', 'jpeg'];
-    const {ext} = fileParts(target.files[0].name.toLowerCase());
-    if (supportedFileExtensions.includes(ext)) { // valid extension
-      loadFile(target.files);
-    } else {
-      alert(`Invalid extension ${ext} in ${supportedFileExtensions.join(', ')}`);
-    }
-  }
-  else { // list of files
-    alert('No support for list of files yet');
-  }
-}
-
 imageInput.addEventListener('change', (ev) => {
   ev.preventDefault()
-  consumeFile(ev)
+  loadDragAndDropFile(ev, () => draw())
 })
 
 document.addEventListener('drop', (ev) => {
   ev.preventDefault()
-  consumeFile(ev)
+  loadDragAndDropFile(ev, () => draw())
 }, false)
 
 document.addEventListener('dragover', (ev) => ev.preventDefault())
@@ -151,44 +133,21 @@ state.loadImage = () => {
   state.image.onload = draw
 }
 
-function loadFile(files) {
-  let file, fr
-
-  if (typeof window.FileReader !== 'function') {
-    console.log('File API not supported')
-    return
-  }
-
-  if (!files) {
-    console.log('No support for files input')
-  } else if (!files[0]) {
-    console.log('No file selected')
-  } else {
-    file = files[0]
-    fr = new FileReader()
-    fr.onload = () => {
-      state.image = new Image()
-      state.image.onload = () => {
-        draw()
-      }
-      state.image.src = fr.result
-    }
-    fr.readAsDataURL(file)
-  }
-}
-
+let canPlayEventListenerHandle
 state.startVideo = async (interval = 16) => {
   state.video = document.querySelector('video')
   const mediaStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false })
   state.video.srcObject = mediaStream
   state.video.play()
-  state.video.addEventListener('canplay', () => {
+  canPlayEventListenerHandle = () => {
     state.image = state.video
     state.videoIntervalHandle = setInterval(draw, interval)
-  })
+  }
+  state.video.addEventListener('canplay', canPlayEventListenerHandle)
 }
 
 state.stopVideo = () => {
+  state.video.removeEventListener('canplay', canPlayEventListenerHandle)
   clearInterval(state.videoIntervalHandle)
   state.video.pause()
   if (state.video.srcObject) {
@@ -200,7 +159,7 @@ state.stopVideo = () => {
 }
 
 inputSourceSelect.addEventListener('change', () => {
-  drop.hidden = true;
+  drop.hidden = true
   switch (inputSourceSelect.value) {
     case 'webcam':
       state.startVideo()
@@ -211,7 +170,7 @@ inputSourceSelect.addEventListener('change', () => {
       break
     case 'file':
       state.stopVideo()
-      drop.hidden = false;
+      drop.hidden = false
       break
     default:
       break
