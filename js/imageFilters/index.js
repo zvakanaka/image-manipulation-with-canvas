@@ -5,6 +5,7 @@ import invert from './invert.js'
 import noFilter from './noFilter.js'
 import pixelate from './pixelate.js'
 // import pointilism from './pointilism.js'
+import scriptureVision from './scriptureVision.js'
 
 export default [
   blackAndWhite,
@@ -13,5 +14,6 @@ export default [
   // magnify,
   noFilter,
   pixelate,
-  // pointilism
+  // pointilism,
+  scriptureVision
 ]

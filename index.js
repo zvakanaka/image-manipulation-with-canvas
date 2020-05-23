@@ -24,6 +24,8 @@ state.drawImg = () => {
   const maxHeight = window.innerHeight
   const imageWidth = state.image.videoWidth || state.image.width
   const imageHeight = state.image.videoHeight || state.image.height
+  state.canvas.width = imageWidth
+  state.canvas.height = imageHeight
 
   if (maxWidth < maxHeight) {
     if (imageWidth > maxWidth) {
@@ -52,25 +54,42 @@ imageFilters.forEach((imageFilter, i) => addImageFilter(imageFilter.name, i))
 
 state.currentFilter = () => imageFilters[imageFilterSelect.value]
 
-let lastSelectedFilteSelectValue
-const draw = () => {
-  state.drawImg()
+let lastSelectedFilterSelectValue
+const draw = async () => {
+  if (!state.drawLock) {
+    state.drawImg()
+  }
+
   const filter = state.currentFilter()
-  if (lastSelectedFilteSelectValue !== imageFilterSelect.value) {
+  if (lastSelectedFilterSelectValue !== imageFilterSelect.value) {
+    // run teardown
+    const lastFilter = imageFilters[lastSelectedFilterSelectValue]
+    if (lastFilter && typeof lastFilter.post === 'function') {
+      await lastFilter.post(state)
+    }
+
+    // set up controls
     Array.from(imageFilterControls.children).forEach(child => child.remove())
     filter.controls.forEach((control) => {
       const controlEl = createControl(control, state)
       imageFilterControls.appendChild(controlEl)
     })
-    lastSelectedFilteSelectValue = imageFilterSelect.value
+    lastSelectedFilterSelectValue = imageFilterSelect.value
+
+    if (typeof filter.pre === 'function') {
+      await filter.pre(state)
+    }
   }
-  filter.func(state, state.lastFuncArg)
+
+  if (!state.drawLock) {
+    filter.func(state, state.lastFuncArg)
+  }
 }
 
 // apply the selected filter
-imageFilterSelect.addEventListener('change', () => {
+imageFilterSelect.addEventListener('change', async () => {
   delete state.lastFuncArg
-  draw()
+  await draw()
 })
 
 state.canvas.addEventListener('mousedown', ({layerX, layerY}) => {
@@ -123,7 +142,7 @@ document.addEventListener('drop', (ev) => {
 
 document.addEventListener('dragover', (ev) => ev.preventDefault())
 
-function loadImage() {
+state.loadImage = () => {
   const imageSrc = 'https://images.unsplash.com/photo-1579036018199-6cab68e7f7c9?ixlib=rb-1.2.1&auto=format&fit=crop&w=1267&q=80'
   const exampleSrc = `${corsServer}${imageSrc}`
   state.image = new Image()
@@ -158,18 +177,18 @@ function loadFile(files) {
   }
 }
 
-async function loadVideo() {
+state.startVideo = async (interval = 16) => {
   state.video = document.querySelector('video')
   const mediaStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false })
   state.video.srcObject = mediaStream
   state.video.play()
   state.video.addEventListener('canplay', () => {
     state.image = state.video
-    state.videoIntervalHandle = setInterval(draw, 16)
+    state.videoIntervalHandle = setInterval(draw, interval)
   })
 }
 
-function stopVideo() {
+state.stopVideo = () => {
   clearInterval(state.videoIntervalHandle)
   state.video.pause()
   if (state.video.srcObject) {
@@ -184,21 +203,21 @@ inputSourceSelect.addEventListener('change', () => {
   drop.hidden = true;
   switch (inputSourceSelect.value) {
     case 'webcam':
-      loadVideo()
+      state.startVideo()
       break
     case 'url':
-      stopVideo()
-      loadImage()
+      state.stopVideo()
+      state.loadImage()
       break
     case 'file':
-      stopVideo()
+      state.stopVideo()
       drop.hidden = false;
       break
     default:
       break
   }
 })
-loadVideo()
+state.startVideo()
 
 // export button - or you can right-click the canvas -> save image
 const exportButton = document.querySelector('.export')
