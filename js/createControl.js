@@ -1,6 +1,10 @@
 export default (control, state) => {
   let el
   switch (control.type) {
+    case 'button':
+      el = document.createElement('button')
+      el.textContent = control.label
+      break
     case 'range':
     case 'slider':
       el = document.createElement('span')
@@ -11,9 +15,6 @@ export default (control, state) => {
       }
       const input = document.createElement('input')
       input.type = 'range'
-      if (control.attributes) {
-        control.attributes.forEach(attr => input.setAttribute(attr.name, attr.value))
-      }
       const valueSpan = document.createElement('span')
       valueSpan.textContent = input.value
       input.addEventListener('input', ({target}) => {

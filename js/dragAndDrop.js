@@ -1,6 +1,6 @@
 import fileParts from './fileParts.js'
 
-function readInFile(files, callback) {
+function readInFile(state, files, callback) {
   let file, fr
 
   if (typeof window.FileReader !== 'function') {
@@ -24,7 +24,7 @@ function readInFile(files, callback) {
   }
 }
 
-export default function loadFile(ev, callback) {
+function loadFile(state, ev, callback) {
   const target = ev.dataTransfer ? ev.dataTransfer : ev.target
   window.fileObject = target.files[0]
   if (target.files.length === 1) { // single file
@@ -32,7 +32,7 @@ export default function loadFile(ev, callback) {
     const supportedFileExtensions = ['png', 'jpg', 'gif', 'bmp', 'jpeg']
     const {ext} = fileParts(target.files[0].name.toLowerCase())
     if (supportedFileExtensions.includes(ext)) { // valid extension
-      readInFile(target.files, callback)
+      readInFile(state, target.files, callback)
     } else {
       alert(`Invalid extension ${ext} in ${supportedFileExtensions.join(', ')}`)
     }
@@ -40,4 +40,16 @@ export default function loadFile(ev, callback) {
   else { // list of files
     alert('No support for list of files yet')
   }
+}
+
+export default function initDragAndDrop(state, inputEl, dropTarget = document) {
+  inputEl.addEventListener('change', (ev) => {
+    ev.preventDefault()
+    loadFile(state, ev, () => state.draw())
+  })
+
+  dropTarget.addEventListener('drop', (ev) => {
+    ev.preventDefault()
+    loadFile(state, ev, () => state.draw())
+  }, false)
 }

@@ -1,7 +1,7 @@
 import imageFilters from './js/imageFilters/index.js'
 import createControl from './js/createControl.js'
 import download from './js/download.js'
-import loadDragAndDropFile from './js/dragAndDrop.js'
+import initDragAndDrop from './js/dragAndDrop.js'
 import { corsServer } from './config.js'
 
 const inputSourceSelect = document.querySelector('.input-source-select')
@@ -15,6 +15,8 @@ const state = {
   ratio: null,
   canvas: document.querySelector('canvas') // defaults to 300x150
 }
+
+initDragAndDrop(state, imageInput)
 
 state.ctx = state.canvas.getContext('2d')
 
@@ -55,7 +57,7 @@ imageFilters.forEach((imageFilter, i) => addImageFilter(imageFilter.name, i))
 state.currentFilter = () => imageFilters[imageFilterSelect.value]
 
 let lastSelectedFilterSelectValue
-const draw = async () => {
+state.draw = async () => {
   if (!state.drawLock) {
     state.drawImg()
   }
@@ -72,6 +74,9 @@ const draw = async () => {
     Array.from(imageFilterControls.children).forEach(child => child.remove())
     filter.controls.forEach((control) => {
       const controlEl = createControl(control, state)
+      if (control.attributes) {
+        control.attributes.forEach(attr => controlEl.setAttribute(attr.name, attr.value))
+      }
       imageFilterControls.appendChild(controlEl)
     })
     lastSelectedFilterSelectValue = imageFilterSelect.value
@@ -89,14 +94,14 @@ const draw = async () => {
 // apply the selected filter
 imageFilterSelect.addEventListener('change', async () => {
   delete state.lastFuncArg
-  await draw()
+  await state.draw()
 })
 
 state.canvas.addEventListener('mousedown', ({layerX, layerY}) => {
   state.lastClickX = layerX
   state.lastClickY = layerY
   if (state.currentFilter().events && state.currentFilter().events.includes('mousedown')) {
-    draw()
+    state.draw()
   }
 })
 
@@ -104,23 +109,13 @@ state.canvas.addEventListener('mousemove', ({layerX, layerY}) => {
   state.lastClickX = layerX
   state.lastClickY = layerY
   if (state.currentFilter().events && state.currentFilter().events.includes('mousemove')) {
-    draw()
+    state.draw()
   }
 })
 
 window.onresize = () => {
-  draw()
+  state.draw()
 }
-
-imageInput.addEventListener('change', (ev) => {
-  ev.preventDefault()
-  loadDragAndDropFile(ev, () => draw())
-})
-
-document.addEventListener('drop', (ev) => {
-  ev.preventDefault()
-  loadDragAndDropFile(ev, () => draw())
-}, false)
 
 document.addEventListener('dragover', (ev) => ev.preventDefault())
 
@@ -130,7 +125,7 @@ state.loadImage = () => {
   state.image = new Image()
   state.image.crossOrigin = 'anonymous'
   state.image.src = exampleSrc
-  state.image.onload = draw
+  state.image.onload = state.draw
 }
 
 let canPlayEventListenerHandle
@@ -141,7 +136,7 @@ state.startVideo = async (interval = 16) => {
   state.video.play()
   canPlayEventListenerHandle = () => {
     state.image = state.video
-    state.videoIntervalHandle = setInterval(draw, interval)
+    state.videoIntervalHandle = setInterval(state.draw, interval)
   }
   state.video.addEventListener('canplay', canPlayEventListenerHandle)
 }
@@ -165,18 +160,23 @@ inputSourceSelect.addEventListener('change', () => {
       state.startVideo()
       break
     case 'url':
-      state.stopVideo()
+      if (state.video) {
+        state.stopVideo()
+      }
       state.loadImage()
       break
     case 'file':
-      state.stopVideo()
+      if (state.video) {
+        state.stopVideo()
+      }
       drop.hidden = false
       break
     default:
       break
   }
 })
-state.startVideo()
+
+inputSourceSelect.dispatchEvent(new Event('change'))
 
 // export button - or you can right-click the canvas -> save image
 const exportButton = document.querySelector('.export')

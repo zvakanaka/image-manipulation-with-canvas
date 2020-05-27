@@ -8,8 +8,30 @@ let ocrTimerId
 export default {
   name: 'Scripture Vision',
   pre: async (state) => {
+
+    const errOutputContainerEl = document.createElement('div')
+    errOutputContainerEl.classList.add('filter-messages')
+    const errOutputEl = document.createElement('pre')
+    errOutputContainerEl.appendChild(errOutputEl)
+    errOutputEl.classList.add('err-output')
+    document.querySelector('.image-filter-controls').insertAdjacentElement('afterend', errOutputEl)
+    const addMessage = (...args) => {
+      errOutputEl.textContent += args
+      errOutputEl.scrollTop = errOutputEl.scrollHeight
+    }
+    console.log = (...args) => addMessage(`log: ${args}\n`)
+    console.info = (...args) => addMessage(`info: ${args}\n`)
+    console.warn = (...args) => addMessage(`warn: ${args}\n`)
+    console.error = (...args) => addMessage(`error: ${args}\n`)
+    window.onerror = function (msg, url, lineNo, columnNo, error) {
+      console.error(msg)
+      return false;
+    }
+
     state.drawLock = true
-    state.stopVideo()
+    if (state.video) { 
+      state.stopVideo()
+    }
     const outputEl = document.createElement('div')
     outputEl.classList.add('ocr-output')
     outputEl.classList.add('filter-messages')
@@ -32,21 +54,55 @@ export default {
     outputEl.textContent = 'OCR Started'
     setTimeout(() => outputEl.textContent = '', 500)
 
-    await state.startVideo(500)
+    if (state.video) {
+      await state.startVideo(500)
+    }
     state.drawLock = false
 
-    ocrTimerId = setInterval(async () => {
-      const { data: { text } } = await scheduler.addJob('recognize', state.canvas);
+    // ocrTimerId = setInterval(async () => {
+    //   addMessage('Starting OCR\n')
+    //   const { data: { text } } = await scheduler.addJob('recognize', state.canvas);
+    //   addMessage('Finished OCR\n')
+    //   outputEl.innerHTML += parseScriptures(text)
+    //   outputEl.scrollTop = outputEl.scrollHeight
+    // }, OCR_INTERVAL);
+
+    const goButton = document.querySelector('#scripture-visualize-go')
+    goButton.addEventListener('click', async () => {
+      addMessage('Starting OCR\n')
+      const startTime = Date.now()
+      const { data: { text } } = await scheduler.addJob('recognize', state.canvas)
+      const endTime = Date.now()
+      const totalTime = endTime - startTime
+      addMessage(`Finished OCR in ${totalTime / 1000} seconds\n`)
       outputEl.innerHTML += parseScriptures(text)
       outputEl.scrollTop = outputEl.scrollHeight
-    }, OCR_INTERVAL);
+    })
   },
-  func: ({ canvas, ctx }) => {},
+  func: ({ canvas, ctx }) => {
+     const pixels = ctx.getImageData(0, 0, canvas.width, canvas.height);
+
+    for (let i = 0; i < pixels.data.length; i = i + 4) {
+      const newColor = (pixels.data[i] + pixels.data[i + 1] + pixels.data[i + 2]) / 3
+      pixels.data[i] = pixels.data[i + 1] = pixels.data[i + 2] = newColor
+    }
+
+    ctx.putImageData(pixels, 0, 0);
+  },
   post: async (state) => {
     clearInterval(ocrTimerId)
     document.querySelector('.ocr-output').remove()
-    state.stopVideo()
-    await state.startVideo()
+    if (state.video) {
+      state.stopVideo()
+      await state.startVideo()
+    }
   },
-  controls: []
+  controls: [
+    {
+      label: 'Go', type: 'button',
+      attributes: [
+        { name: 'id', value: 'scripture-visualize-go' }
+      ]
+    }
+  ]
 }
