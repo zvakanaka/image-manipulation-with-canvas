@@ -139,6 +139,8 @@ REVELATION = 'nt/rev'
 
 const nt = {
   'matt': MATTHEW,
+  'matthew': MATTHEW,
+  'matthow': MATTHEW,
   'mark': MARK,
   'luke': LUKE,
   'john': JOHN,
@@ -215,6 +217,7 @@ const bofm = {
   'of mormon': WORDS_OF_MORMON,
   'mosiah': MOSIAH,
   'alma': ALMA,
+  'aima': ALMA, // typo
   'hel': HELAMAN,
   'helaman': HELAMAN,
   '3 ne': THIRD_NEPHI,
@@ -235,6 +238,11 @@ const DOCTRINE_AND_COVENANTS = 'dc-testament/dc',
 const dc = {
   'd&c': DOCTRINE_AND_COVENANTS,
   'd&amp;c': DOCTRINE_AND_COVENANTS,
+  'dec': DOCTRINE_AND_COVENANTS, // typo
+  'dac': DOCTRINE_AND_COVENANTS, // typo
+  'd8c': DOCTRINE_AND_COVENANTS, // typo
+  '08c': DOCTRINE_AND_COVENANTS, // typo
+  'dbc': DOCTRINE_AND_COVENANTS, // typo
   'od': OFFICIAL_DECLARATION
 }
 
@@ -247,10 +255,13 @@ const MOSES = 'pgp/moses',
 
 const pgp = {
   'moses': MOSES,
+  'm0ses': MOSES, // typo
   'abr': ABRAHAM,
   'js—m': JOSEPH_SMITH_MATTHEW,
   'jst m': JOSEPH_SMITH_MATTHEW,
   'js—h': JOSEPH_SMITH_HISTORY,
+  'jsh': JOSEPH_SMITH_HISTORY,
+  'j5h': JOSEPH_SMITH_HISTORY, // typo
   'a of f': ARTICLES_OF_FAITH
 }
 

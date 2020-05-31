@@ -37,6 +37,6 @@ label {
 }
 
 .filter-messages {
-  max-height: 8em;
+  max-height: 32em;
   overflow-y: auto;
 }

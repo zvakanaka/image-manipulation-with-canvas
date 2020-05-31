@@ -1,5 +1,6 @@
 export default (control, state) => {
   let el
+  let attributeEl
   switch (control.type) {
     case 'button':
       el = document.createElement('button')
@@ -15,6 +16,7 @@ export default (control, state) => {
       }
       const input = document.createElement('input')
       input.type = 'range'
+      attributeEl = input
       const valueSpan = document.createElement('span')
       valueSpan.textContent = input.value
       input.addEventListener('input', ({target}) => {
@@ -58,6 +60,14 @@ export default (control, state) => {
     default:
       break
   }
+
+  if (control.attributes) {
+    if (!attributeEl) {
+     attributeEl = el 
+    }
+    control.attributes.forEach(attr => attributeEl.setAttribute(attr.name, attr.value))
+  }
+
   return el
 }
 

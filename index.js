@@ -3,6 +3,14 @@ import createControl from './js/createControl.js'
 import download from './js/download.js'
 import initDragAndDrop from './js/dragAndDrop.js'
 import { corsServer } from './config.js'
+import './js/logWindow.js'
+
+document.body.appendChild(document.createElement('log-window'))
+customElements.whenDefined('log-window').then(() => {
+  const log = document.querySelector('log-window')
+  log.windowTitle = 'Console Output'
+  log.consoleOverride = true
+})
 
 const inputSourceSelect = document.querySelector('.input-source-select')
 const imageFilterContainer = document.querySelector('.image-filter-container')
@@ -10,6 +18,9 @@ const imageFilterSelect = imageFilterContainer.querySelector('.image-filter-sele
 const imageFilterControls = imageFilterContainer.querySelector('.image-filter-controls')
 const drop = document.querySelector('.drop')
 const imageInput = drop.querySelector('#image-file')
+const urlInputContainer = document.querySelector('.url-input-container')
+const urlInput = document.querySelector('.url-input')
+const urlInputGo = document.querySelector('.url-input-go-button')
 
 const state = {
   ratio: null,
@@ -74,9 +85,6 @@ state.draw = async () => {
     Array.from(imageFilterControls.children).forEach(child => child.remove())
     filter.controls.forEach((control) => {
       const controlEl = createControl(control, state)
-      if (control.attributes) {
-        control.attributes.forEach(attr => controlEl.setAttribute(attr.name, attr.value))
-      }
       imageFilterControls.appendChild(controlEl)
     })
     lastSelectedFilterSelectValue = imageFilterSelect.value
@@ -120,13 +128,17 @@ window.onresize = () => {
 document.addEventListener('dragover', (ev) => ev.preventDefault())
 
 state.loadImage = () => {
-  const imageSrc = 'https://images.unsplash.com/photo-1579036018199-6cab68e7f7c9?ixlib=rb-1.2.1&auto=format&fit=crop&w=1267&q=80'
+  urlInputContainer.hidden = false
+  const defaultImageUrl = 'https://images.unsplash.com/photo-1579036018199-6cab68e7f7c9?ixlib=rb-1.2.1&auto=format&fit=crop&w=1267&q=80'
+  const imageSrc = !urlInput.value ? defaultImageUrl : urlInput.value
   const exampleSrc = `${corsServer}${imageSrc}`
   state.image = new Image()
   state.image.crossOrigin = 'anonymous'
   state.image.src = exampleSrc
   state.image.onload = state.draw
 }
+
+urlInputGo.addEventListener('click', state.loadImage)
 
 let canPlayEventListenerHandle
 state.startVideo = async (interval = 16) => {
@@ -155,6 +167,7 @@ state.stopVideo = () => {
 
 inputSourceSelect.addEventListener('change', () => {
   drop.hidden = true
+  urlInputContainer.hidden = true
   switch (inputSourceSelect.value) {
     case 'webcam':
       state.startVideo()
