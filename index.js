@@ -5,12 +5,12 @@ import initDragAndDrop from './js/dragAndDrop.js'
 import { corsServer } from './config.js'
 import './js/logWindow.js'
 
-document.body.appendChild(document.createElement('log-window'))
-customElements.whenDefined('log-window').then(() => {
-  const log = document.querySelector('log-window')
-  log.windowTitle = 'Console Output'
-  log.consoleOverride = true
-})
+// document.body.appendChild(document.createElement('log-window'))
+// customElements.whenDefined('log-window').then(() => {
+//   const log = document.querySelector('log-window')
+//   log.windowTitle = 'Console Output'
+//   log.consoleOverride = true
+// })
 
 const inputSourceSelect = document.querySelector('.input-source-select')
 const imageFilterContainer = document.querySelector('.image-filter-container')
@@ -197,3 +197,120 @@ exportButton.addEventListener('click', () => {
   const outFileName = `${state.currentFilter().name}-${new Date().toString()}.png`
   state.canvas.toBlob(blob => download(blob, outFileName))
 })
+
+// send button - or you can right-click the canvas -> save image
+const sendButton = document.querySelector('.send')
+sendButton.addEventListener('click', async () => {
+const THRESHOLD = 128;
+
+  sendButton.disabled = true;
+  var imgData = state.ctx.getImageData(0, 0, state.canvas.width, state.canvas.height);
+  function getPixel(imgData, index) {
+    var i = index * 4, d = imgData.data;
+    return [d[i], d[i+1], d[i+2], d[i+3]] // Returns array [R,G,B,A]
+  }
+  function getPixelXY(imgData, x, y) {
+    return getPixel(imgData, y * imgData.width + x);
+  }
+  const rows = [];
+  
+  const pixelsWidth = 128;
+  const dividend = state.canvas.width / pixelsWidth
+  const pixelsHeight = 64 //state.canvas.height / dividend
+  // console.log(state.canvas.width, pixelsWidth, pixelsHeight, dividend)
+  for (let y = 0; y < pixelsHeight; y++) {
+    const row = [];
+    for (let x = 0; x < pixelsWidth; x++) {
+      const [r, g, b] = getPixelXY(imgData,
+        x * dividend + (Math.floor(dividend / 2)),
+        y * dividend + (Math.floor(dividend / 2)))
+        // const [r, g, b] = getPixelXY(imgData, x, y);
+        const pixel = (r + g + b) / 3 > THRESHOLD ? 1 : 0
+        row.push(pixel);
+    }
+    rows.push(row.join(''));
+  }
+
+    // for (let x = 0; x < pixelsWidth; x++) {
+    //   for (let y = 0; y < pixelsHeight; y++) {
+    //     const data = getPixelXY(
+    //       x * dividend + (Math.floor(dividend / 2)),
+    //       y * dividend + (Math.floor(dividend / 2)))
+    //     const [r, g, b] = data
+
+    //     // state.ctx.fillStyle = `rgb(${r}, ${g}, ${b})`
+    //     // state.ctx.fillRect(x * dividend, y * dividend, dividend, dividend)
+    //   }
+    // }
+
+
+console.log(rows)
+const n = 64; // number of times to call promise
+const responses = await sequentialPromiseAll(
+    sendRow, // function that returns a promise (will be called n times after previous one resolves)
+    [0, rows[0]], // arguments array provided to promise
+    n, // number of times to call promise
+    ( // callback - invoked after each promise resolution
+      argsHandle, // modify this in the callback to change the arguments at the next invocation
+      _previousResponse, // what is resolved from promise
+      i) => {
+        
+        argsHandle[0] = i;
+        argsHandle[1] = rows[i];
+      });
+      sendButton.disabled = false;
+    })
+    
+    
+    function delay(ms) {
+      return new Promise(function (resolve) { return setTimeout(resolve, ms); });
+    };
+function sendRow(num, data) {
+  return new Promise(async (resolve) => {
+    await delay(100);
+    const payload = {
+      rowNum: num,
+      data
+    }
+      fetch('https://example.com/endpoint', {
+        method: 'POST',
+        body: JSON.stringify(payload),
+        'content-type': 'application/json'
+      })
+      .then(res => res.text())
+      .then(data => resolve(data));
+
+  })
+}
+
+/** see https://www.npmjs.com/package/sequential-promise-all */
+/**
+ * Call a promise n times, waiting for each promise to resolve before calling it again.
+ * THANK YOU for idea: Jason Suttles https://stackoverflow.com/a/43377621/4151489
+ * @param  {function} promise        function that returns a Promise (will be called n times after previous one finishes)
+ * @param  {Array}    args           arguments to pass to promise
+ * @param  {Number}   n              number of times to call promise
+ * @param  {function} [updateCb]     callback that is called after every resolution (modify args here before next call if desired)
+ * @return {Promise[]}               array of responses from all promises
+ */
+function sequentialPromiseAll(promise, args, n, updateCb) {
+  return new Promise((resolve, reject) => {
+    const responses = [];
+    const arr = Array.from(Array(n), (_d, i) => i); // create array filled with 0..n
+    arr.reduce((p, _item, i) => {
+      return p.then((previousResponse) => {
+        if (previousResponse) {
+          responses.push(previousResponse);
+          if (updateCb) updateCb(args, previousResponse, i);
+        }
+        return promise(...args);
+      });
+    }, Promise.resolve()).then((previousResponse) => {
+      responses.push(previousResponse);
+      resolve(responses);
+    }).catch((err) => {
+      console.warn(err, responses);
+      reject(responses);
+    });
+  });
+}
