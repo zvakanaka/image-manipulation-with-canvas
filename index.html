@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,6 +8,7 @@
   <link rel="stylesheet" href="./css/index.css">
   <link rel="stylesheet" href="./css/drag-and-drop.css">
 </head>
+
 <body>
   <canvas></canvas>
 
@@ -44,13 +46,46 @@
       </label>
       <div class="image-filter-controls"></div>
     </div>
-    <div class="export-button-container">
-      <button class="export">Export</button>
+    <div class="button-container">
+      <button class="send-button">Send to Display</button>
+      <button class="export" >Export</button>
     </div>
-    <div class="send-button-container">
-      <button class="send">Send</button>
+
+    
+    <div class="text-container">
+      <h1>Display Commands</h1>
+      <div class="clear-display-button-container">
+        <button class="clear-display-button">Clear</button>
+      </div>
+      <div>
+        <label>
+          X
+          <input class="send-text-x" type="number" value="0" />
+        </label>
+        <label>
+          Y
+          <input class="send-text-y" type="number" value="0" />
+        </label>
+        <label>
+          Size
+          <input class="send-text-size" type="number" value="1" />
+        </label>
+      </div>
+      <textarea class="send-text-text" cols="30" rows="10"></textarea>
+      <div>
+        <button class="send-text-button">Send Text</button>
+      </div>
+    </div>
+
+    <div>
+        <button class="invert-button">Invert</button>
+        <button class="un-invert-button">Un-Invert</button>
+
+        <button class="dim-button">Dim</button>
+        <button class="un-dim-button">Un-Dim</button>
     </div>
   </div>
   <script src="./index.js" type="module"></script>
 </body>
+
 </html>
