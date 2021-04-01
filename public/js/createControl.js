@@ -16,9 +16,12 @@ export default (control, state) => {
       }
       const input = document.createElement('input')
       input.type = 'range'
+      setTimeout(() => {
+        input.value = control.default
+      })
       attributeEl = input
       const valueSpan = document.createElement('span')
-      valueSpan.textContent = input.value
+      valueSpan.textContent = control.default
       input.addEventListener('input', ({target}) => {
         control.currentValue = Number(target.value)
         state.drawImg()

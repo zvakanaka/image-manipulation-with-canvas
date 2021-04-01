@@ -1,5 +1,5 @@
-const DEFAULT_PIXELS_WIDTH = 32
-const MAX_PIXELS_WIDTH = 250
+const DEFAULT_PIXELS_WIDTH = 128
+const MAX_PIXELS_WIDTH = 128
 
 export default {
   name: 'Pixelate',

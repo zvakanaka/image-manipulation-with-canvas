@@ -144,7 +144,10 @@ urlInputGo.addEventListener('click', state.loadImage)
 let canPlayEventListenerHandle
 state.startVideo = async (interval = 16) => {
   state.video = document.querySelector('video')
-  const mediaStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false })
+  const mediaStream = await navigator.mediaDevices.getUserMedia({ audio: false,   video: {
+    width: 640,
+    height: { max: 640 }
+  } })
   state.video.srcObject = mediaStream
   state.video.play()
   canPlayEventListenerHandle = () => {

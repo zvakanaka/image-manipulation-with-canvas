@@ -1,4 +1,5 @@
 import blackAndWhite from './blackAndWhite.js'
+import dither from './dither.js'
 import grayscale from './grayscale.js'
 import invert from './invert.js'
 // import magnify from './magnify.js'
@@ -8,6 +9,7 @@ import pixelate from './pixelate.js'
 import scriptureVision from './scriptureVision.js'
 
 export default [
+  dither,
   blackAndWhite,
   grayscale,
   invert,
