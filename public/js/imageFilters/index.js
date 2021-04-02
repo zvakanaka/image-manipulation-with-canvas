@@ -13,9 +13,9 @@ export default [
   blackAndWhite,
   grayscale,
   invert,
-  // magnify,
+  magnify,
   noFilter,
   pixelate,
-  // pointilism,
+  pointilism,
   scriptureVision
 ]
